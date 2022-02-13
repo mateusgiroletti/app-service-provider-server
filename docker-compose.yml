@@ -8,3 +8,27 @@ services:
             - "3333:3333"
         volumes:
             - .:/usr/app
+    
+    db:
+        image: postgres
+        restart: always
+        tty: true
+        volumes:
+            - .pgdata:/var/lib/postgres/data
+        environment:
+            - POSTGRES_DB=${DB_NAME}
+            - POSTGRES_USER=${DB_USER}
+            - POSTGRES_PASSWORD=${DB_PASS}
+        ports:
+            - "5432:5432"
+
+    pgamin:
+        image: dpage/pgadmin4
+        tty: true
+        environment:
+            - PGADMIN_DEFAULT_EMAIL=${PGADMIN_DEFAULT_EMAIL}
+            - PGADMIN_DEFAULT_PASSWORD=${PGADMIN_DEFAULT_PASSWORD}
+        ports:
+            - "9000:80"
+        depends_on:
+            - db
