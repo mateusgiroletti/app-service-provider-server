@@ -4,17 +4,18 @@ services:
     app:
         build: .
         command: npm run dev
+        tty: true
         ports:
             - "3333:3333"
         volumes:
             - .:/usr/app
-    
+
     db:
         image: postgres
         restart: always
-        tty: true
+        tty: false
         volumes:
-            - .pgdata:/var/lib/postgres/data
+            - pg-data:/var/lib/postgres/data
         environment:
             - POSTGRES_DB=${DB_NAME}
             - POSTGRES_USER=${DB_USER}
@@ -24,7 +25,7 @@ services:
 
     pgamin:
         image: dpage/pgadmin4
-        tty: true
+        tty: false
         environment:
             - PGADMIN_DEFAULT_EMAIL=${PGADMIN_DEFAULT_EMAIL}
             - PGADMIN_DEFAULT_PASSWORD=${PGADMIN_DEFAULT_PASSWORD}
@@ -32,3 +33,21 @@ services:
             - "9000:80"
         depends_on:
             - db
+    mongo:
+        image: 'mongo'
+        tty: false
+        restart: unless-stopped
+        volumes:
+            - mongo-data:/data
+        ports:
+            - '27017:27017'
+    redis:
+        image: redis:alpine
+        ports:
+            - "6379:6379"
+        volumes:
+            - redis-data:/var/lib/redis
+volumes:
+    pg-data:
+    mongo-data:
+    redis-data:
