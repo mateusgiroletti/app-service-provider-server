@@ -1,14 +1,12 @@
 import * as Yup from "yup";
-import { startOfHour, parseISO, isBefore, format, subHours } from "date-fns";
+import { format, startOfHour, parseISO, isBefore, subHours } from "date-fns";
 import pt from "date-fns/locale/pt";
-
-import Appointment from "../models/Appointment";
 import User from "../models/User";
 import File from "../models/File";
+import Appointment from "../models/Appointment";
 import Notification from "../schemas/Notification";
-
-import CancellationMail from "../jobs/CancellationMail";
 import Queue from "../../lib/Queue";
+import CancellationMail from "../jobs/CancellationMail";
 
 class AppointmentController {
     async index(req, res) {
@@ -17,7 +15,6 @@ class AppointmentController {
         const appointments = await Appointment.findAll({
             where: { user_id: req.userId, canceled_at: null },
             order: ["date"],
-            attributes: ["id", "date", "past", "cancelable"],
             limit: 20,
             offset: (page - 1) * 20,
             include: [
@@ -34,6 +31,7 @@ class AppointmentController {
                     ],
                 },
             ],
+            attributes: ["id", "date", "past", "cancelable"],
         });
 
         return res.json(appointments);
@@ -41,8 +39,9 @@ class AppointmentController {
 
     async store(req, res) {
         const schema = Yup.object().shape({
-            provider_id: Yup.number().required(),
             date: Yup.date().required(),
+            user_id: Yup.number(),
+            provider_id: Yup.number().required(),
         });
 
         if (!(await schema.isValid(req.body))) {
@@ -51,22 +50,24 @@ class AppointmentController {
 
         const { provider_id, date } = req.body;
 
-        const checkIsProvider = await User.findOne({
+        if (provider_id === req.userId) {
+            return res
+                .status(400)
+                .json({ error: "User cannot choose himself" });
+        }
+
+        const checkisProvider = await User.findOne({
             where: { id: provider_id, provider: true },
         });
 
-        if (!checkIsProvider) {
-            return res.status(401).json({
-                error: "You can only create appointments with providers",
-            });
+        if (!checkisProvider) {
+            return res.status(400).json({ error: "User is not a provider" });
         }
 
         const hourStart = startOfHour(parseISO(date));
 
         if (isBefore(hourStart, new Date())) {
-            return res
-                .status(400)
-                .json({ error: "Past dates are not permitted" });
+            return res.status(400).json({ error: "Past date is not allowed" });
         }
 
         const checkAvailability = await Appointment.findOne({
@@ -80,24 +81,26 @@ class AppointmentController {
         if (checkAvailability) {
             return res
                 .status(400)
-                .json({ error: "This hour is not avaliable" });
+                .json({ error: "Appointment date is not available" });
         }
 
         const appointment = await Appointment.create({
             user_id: req.userId,
             provider_id,
-            date,
+            date: hourStart,
         });
 
+        // Notify appointment provider
+
         const user = await User.findByPk(req.userId);
-        const formattedDate = format(
+        const formatedDate = format(
             hourStart,
-            "'dia' dd 'de' MMMM', às' H:mm'h'",
+            "'dia' dd 'de' MMMM', às ' H:mm'h'",
             { locale: pt }
         );
 
         await Notification.create({
-            content: `Novo agendamento de ${user.name} para o ${formattedDate}`,
+            content: `Novo agendamento de ${user.name} para ${formatedDate}`,
             user: provider_id,
         });
 
@@ -105,7 +108,9 @@ class AppointmentController {
     }
 
     async delete(req, res) {
-        const appointment = await Appointment.findByPk(req.params.id, {
+        const { id } = req.params;
+
+        const appointment = await Appointment.findByPk(id, {
             include: [
                 {
                     model: User,
@@ -122,15 +127,15 @@ class AppointmentController {
 
         if (appointment.user_id !== req.userId) {
             return res.status(401).json({
-                error: "You dont't have permission to cancel this appointment.",
+                error: "You don't have permission to cancel this appointment",
             });
         }
 
-        const dateWithsub = subHours(appointment.date, 2);
+        const dateWithSub = subHours(appointment.date, 2);
 
-        if (isBefore(dateWithsub, new Date())) {
+        if (isBefore(dateWithSub, new Date())) {
             return res.status(401).json({
-                error: "You can only cancel appointments 2 hours in advance.",
+                error: "You can only cancel appointments 2 hours in advance",
             });
         }
 
@@ -138,9 +143,7 @@ class AppointmentController {
 
         await appointment.save();
 
-        await Queue.add(CancellationMail.key, {
-            appointment,
-        });
+        Queue.add(CancellationMail.key, { appointment });
 
         return res.json(appointment);
     }

@@ -9,7 +9,7 @@ class SessionController {
     async store(req, res) {
         const schema = Yup.object().shape({
             email: Yup.string().email().required(),
-            password: Yup.string().required(),
+            password: Yup.string().required().min(6),
         });
 
         if (!(await schema.isValid(req.body))) {
@@ -48,7 +48,7 @@ class SessionController {
                 provider,
             },
             token: jwt.sign({ id }, authConfig.secret, {
-                expiresIn: authConfig.experionIn,
+                expiresIn: authConfig.expiresIn,
             }),
         });
     }

@@ -1,4 +1,5 @@
 import * as Yup from "yup";
+
 import User from "../models/User";
 import File from "../models/File";
 
@@ -14,14 +15,13 @@ class UserController {
             return res.status(400).json({ error: "Validation fails" });
         }
 
-        const userExist = await User.findOne({
+        const userExists = await User.findOne({
             where: { email: req.body.email },
         });
 
-        if (userExist) {
+        if (userExists) {
             return res.status(400).json({ error: "User already exists." });
         }
-
         const { id, name, email, provider } = await User.create(req.body);
 
         return res.json({ id, name, email, provider });
@@ -31,7 +31,7 @@ class UserController {
         const schema = Yup.object().shape({
             name: Yup.string(),
             email: Yup.string().email(),
-            oldPassword: Yup.string().min(5),
+            oldPassword: Yup.string().min(6),
             password: Yup.string()
                 .min(6)
                 .when("oldPassword", (oldPassword, field) =>
@@ -43,25 +43,22 @@ class UserController {
         });
 
         if (!(await schema.isValid(req.body))) {
-            return res.status(400).json({ erro: "validation fails" });
+            return res.status(400).json({ error: "Validation fails" });
         }
 
         const { email, oldPassword } = req.body;
-
         const user = await User.findByPk(req.userId);
 
-        if (email !== user.email) {
-            const userExist = await User.findOne({ where: { email } });
+        if (email && email !== user.email) {
+            const userExists = await User.findOne({ where: { email } });
 
-            if (userExist) {
-                return res.status(400).json({
-                    error: "this email is alredy registred in our database",
-                });
+            if (userExists) {
+                return res.status(400).json({ error: "User already exists." });
             }
         }
 
         if (oldPassword && !(await user.checkPassword(oldPassword))) {
-            return res.status(401).json({ error: "password is wrong" });
+            return res.status(401).json({ error: "Password does not mach" });
         }
 
         await user.update(req.body);

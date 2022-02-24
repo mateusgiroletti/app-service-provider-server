@@ -1,8 +1,9 @@
-import nodemailer from "nodemailer";
-import { resolve } from "path";
-import mailConfig from "../config/mail";
+/* import nodemailer from "nodemailer";
 import exphbs from "express-handlebars";
 import nodemailerhbs from "nodemailer-express-handlebars";
+import { resolve } from "path";
+
+import mailConfig from "../config/mail";
 
 class Mail {
     constructor() {
@@ -16,13 +17,6 @@ class Mail {
         });
 
         this.configureTemplates();
-    }
-
-    sendMail(message) {
-        this.transporter.sendMail({
-            ...mailConfig.default,
-            ...message,
-        });
     }
 
     configureTemplates() {
@@ -42,6 +36,14 @@ class Mail {
             })
         );
     }
+
+    sendMail(message) {
+        return this.transporter.sendMail({
+            ...mailConfig.default,
+            ...message,
+        });
+    }
 }
 
 export default new Mail();
+ */
