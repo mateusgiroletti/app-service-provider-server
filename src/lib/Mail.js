@@ -1,4 +1,4 @@
-/* import nodemailer from "nodemailer";
+import nodemailer from "nodemailer";
 import exphbs from "express-handlebars";
 import nodemailerhbs from "nodemailer-express-handlebars";
 import { resolve } from "path";
@@ -46,4 +46,3 @@ class Mail {
 }
 
 export default new Mail();
- */
