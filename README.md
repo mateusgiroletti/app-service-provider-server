@@ -2,6 +2,8 @@
 
 Application to manage registration of service providers (Web App) and where yours clients can schedule an appointment at a time available (Mobile App).
 
+The web part can be found [here](https://github.com/mateusgiroletti/app-service-provider-web) .And the mobile part can be found [here](https://github.com/mateusgiroletti/app_service_provider_mobile)
+
 ## What he does?
 
 This repository is intended for backend part of the application, responsible for responding to requests from both web and mobile applications.
