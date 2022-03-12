@@ -2,7 +2,7 @@
 
 Application to manage registration of service providers (Web App) and where yours clients can schedule an appointment at a time available (Mobile App).
 
-The web part can be found [here](https://github.com/mateusgiroletti/app-service-provider-web).And the mobile part can be found [here](https://github.com/mateusgiroletti/app_service_provider_mobile).
+The web part can be found [here](https://github.com/mateusgiroletti/app-service-provider-web). And the mobile part can be found [here](https://github.com/mateusgiroletti/app_service_provider_mobile).
 
 ## What he does?
 
@@ -15,6 +15,34 @@ Intended to apply the knowledge obtained in courses and tutorials on the interne
 ## How to use?
 
 To use the application it is recommended to have docker installed, so it is not necessary to install the database and other utilities found in the docker-compose file, but it is also possible to make some changes and up the necessary servers "manually".
+
+Clone this project on your favorite dir:
+
+```console
+git clone https://github.com/mateusgiroletti/app-service-provider-server.git
+```
+
+Change to the root directory and install the necessary packages:
+
+```console
+cd app-service-provider-server/ && npm install
+```
+
+Edit the .env.example file to .env and put the necessary environment variables.
+
+Start the dockers containers.
+
+```console
+docker-compose up
+```
+
+Run the migrations for create the tables in postgres:
+
+```console
+npx sequelize db:migrate
+```
+
+Finally test the application <a href="http://localhost:3333/" target="_blank">Here</a>
 
 ## Contact
 
