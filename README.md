@@ -8,6 +8,10 @@ The web part can be found [here](https://github.com/mateusgiroletti/app-service-
 
 This repository is intended for backend part of the application, responsible for responding to requests from both web and mobile applications.
 
+A representation of the structure and technologies used can be seen below:
+
+<img src="./images/structure.png" alt="Structure" />
+
 ## What is your use?
 
 Intended to apply the knowledge obtained in courses and tutorials on the internet using Nodejs, Postgres, MongoDB, Redis and Docker technologies.
