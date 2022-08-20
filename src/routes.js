@@ -13,6 +13,7 @@ import AvailableController from "./app/controllers/AvailableController";
 import UserStore from "./app/validators/UserStore";
 import UserUpdate from "./app/validators/UserUpdate";
 import AppointmentStore from "./app/validators/AppointmentStore";
+import SessionStore from "./app/validators/SessionStore";
 
 import authMiddleware from "./app/middlewares/auth";
 
@@ -22,7 +23,7 @@ const routes = new Router();
 const upload = multer(multerConfig);
 
 routes.post("/users", UserStore, UserController.store);
-routes.post("/sessions", SessionController.store);
+routes.post("/sessions", SessionStore, SessionController.store);
 
 routes.use(authMiddleware);
 
