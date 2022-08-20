@@ -1,4 +1,3 @@
-import * as Yup from "yup";
 import { format, startOfHour, parseISO, isBefore, subHours } from "date-fns";
 import pt from "date-fns/locale/pt";
 import User from "../models/User";
@@ -38,16 +37,6 @@ class AppointmentController {
     }
 
     async store(req, res) {
-        const schema = Yup.object().shape({
-            date: Yup.date().required(),
-            user_id: Yup.number(),
-            provider_id: Yup.number().required(),
-        });
-
-        if (!(await schema.isValid(req.body))) {
-            return res.status(400).json({ error: "Validation fails" });
-        }
-
         const { provider_id, date } = req.body;
 
         if (provider_id === req.userId) {

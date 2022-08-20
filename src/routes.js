@@ -12,6 +12,7 @@ import AvailableController from "./app/controllers/AvailableController";
 
 import UserStore from "./app/validators/UserStore";
 import UserUpdate from "./app/validators/UserUpdate";
+import AppointmentStore from "./app/validators/AppointmentStore";
 
 import authMiddleware from "./app/middlewares/auth";
 
@@ -29,7 +30,7 @@ routes.put("/users", UserUpdate, UserController.update);
 routes.post("/files", upload.single("file"), FileController.store);
 routes.get("/providers", ProviderController.index);
 routes.get("/providers/:providerId/available", AvailableController.index);
-routes.post("/appointments", AppointmentController.store);
+routes.post("/appointments", AppointmentStore, AppointmentController.store);
 routes.get("/appointments", AppointmentController.index);
 routes.delete("/appointments/:id", AppointmentController.delete);
 routes.get("/schedules", ScheduleController.index);
