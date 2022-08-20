@@ -11,6 +11,7 @@ import NotificationController from "./app/controllers/NotificationController";
 import AvailableController from "./app/controllers/AvailableController";
 
 import UserStore from "./app/validators/UserStore";
+import UserUpdate from "./app/validators/UserUpdate";
 
 import authMiddleware from "./app/middlewares/auth";
 
@@ -24,7 +25,7 @@ routes.post("/sessions", SessionController.store);
 
 routes.use(authMiddleware);
 
-routes.put("/users", UserController.update);
+routes.put("/users", UserUpdate, UserController.update);
 routes.post("/files", upload.single("file"), FileController.store);
 routes.get("/providers", ProviderController.index);
 routes.get("/providers/:providerId/available", AvailableController.index);
