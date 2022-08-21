@@ -39,8 +39,8 @@ class AppointmentController {
         const appointment = await CreateAppointmentService.run({
             provider_id,
             user_id: req.userId,
-            date
-        })
+            date,
+        });
 
         return res.json(appointment);
     }
@@ -50,8 +50,8 @@ class AppointmentController {
 
         const appointment = await CancelAppointmentService.run({
             id,
-            user_id: req.userId
-        })
+            user_id: req.userId,
+        });
 
         return res.json(appointment);
     }
