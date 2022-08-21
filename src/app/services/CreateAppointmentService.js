@@ -1,16 +1,15 @@
-import { startOfHour, parseISO, isBefore, format } from 'date-fns'
-import pt from 'date-fns/local/pt';
+import { startOfHour, parseISO, isBefore, format } from "date-fns";
+import pt from "date-fns/locale/pt";
 
-import User from '../models/User';
-import Appointment from '../models/Appointment';
+import User from "../models/User";
+import Appointment from "../models/Appointment";
 
-import Notification from '../schemas/Notification';
+import Notification from "../schemas/Notification";
 
 class CreateAppointmentService {
     async run({ provider_id, date, user_id }) {
-
         if (provider_id === user_id) {
-            throw new Error('User cannot choose himself');
+            throw new Error("User cannot choose himself");
         }
 
         const checkisProvider = await User.findOne({
@@ -18,13 +17,13 @@ class CreateAppointmentService {
         });
 
         if (!checkisProvider) {
-            throw new Error('User is not a provider');
+            throw new Error("User is not a provider");
         }
 
         const hourStart = startOfHour(parseISO(date));
 
         if (isBefore(hourStart, new Date())) {
-            throw new Error('Past date is not allowed')
+            throw new Error("Past date is not allowed");
         }
 
         const checkAvailability = await Appointment.findOne({
@@ -36,7 +35,7 @@ class CreateAppointmentService {
         });
 
         if (checkAvailability) {
-            throw new Error('Appointment date is not available');
+            throw new Error("Appointment date is not available");
         }
 
         const appointment = await Appointment.create({
