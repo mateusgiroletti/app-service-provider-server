@@ -1,4 +1,3 @@
-import { parseISO, } from "date-fns";
 import AvailableService from "../services/AvailableService";
 
 class AvailableController {
@@ -10,10 +9,11 @@ class AvailableController {
             return res.status(400).json({ error: "Invalid date" });
         }
 
-        const searchDate = parseISO(date);
+        const searchDate = Number(date);
 
-        const available = await AvailableService({
-            providerId, searchDate
+        const available = await AvailableService.run({
+            providerId,
+            searchDate,
         });
 
         return res.json(available);
